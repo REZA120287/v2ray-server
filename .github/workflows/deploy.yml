@@ -1,0 +1,25 @@
+name: Deploy V2Ray to Cloudflare
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install sing-box
+      run: |
+        curl -fsSL https://sing-box.app/install.sh | bash
+
+    - name: Start V2Ray Tunnel
+      run: |
+        nohup sing-box run &
+
+    - name: Expose to Internet with Cloudflare Tunnel
+      run: |
+        curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
+        chmod +x cloudflared
+        ./cloudflared tunnel --url http://localhost:1080
